@@ -10,7 +10,7 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
 RUN \
-  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
+  if [ -f yarn.lock ]; then yarn --frozen-lockfile --production=false; \
   elif [ -f package-lock.json ]; then npm ci; \
   elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm && pnpm i --frozen-lockfile; \
   else echo "Lockfile not found." && exit 1; \
@@ -53,7 +53,15 @@ ENV NODE_ENV=development
 # Uncomment the following line in case you want to disable telemetry during runtime.
 # ENV NO_TELEMETRY 1
 
-RUN yarn build
+# Split build steps for better error visibility
+RUN echo "Running TinaCMS build..." && \
+    yarn tinacms build --partial-reindex --verbose || { echo "TinaCMS build failed"; exit 1; }
+
+RUN echo "Running eleventy build..." && \
+    yarn eleventy --input='site' || { echo "Eleventy build failed"; exit 1; }
+
+RUN echo "Running TypeScript compilation..." && \
+    yarn tsc || { echo "TypeScript compilation failed"; exit 1; }
 
 # If using npm comment out above and use below instead
 # RUN npm run build
