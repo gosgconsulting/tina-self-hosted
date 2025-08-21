@@ -108,10 +108,14 @@ ARG NEXTAUTH_URL
 ENV GITHUB_BRANCH=${GITHUB_BRANCH:-main}
 ENV GITHUB_OWNER=${GITHUB_OWNER:-gosgconsulting}
 ENV GITHUB_REPO=${GITHUB_REPO:-tina-self-hosted}
-ENV GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN:-''}
+ENV GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN:-dummy-token-for-local-dev}
+
+# MongoDB connection will be provided by Railway at runtime
 ENV MONGODB_URI=${MONGODB_URI:-''}
-ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-''}
-ENV NEXTAUTH_URL=${NEXTAUTH_URL:-''}
+
+# NextAuth configuration - secrets will be injected by Railway
+ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-'fallback-secret-for-local-dev'}
+ENV NEXTAUTH_URL=${NEXTAUTH_URL:-'http://localhost:3000'}
 
 WORKDIR /app
 
