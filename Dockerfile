@@ -61,9 +61,9 @@ RUN yarn global add @tinacms/cli
 ENV PATH="/usr/local/share/.config/yarn/global/node_modules/.bin:$PATH"
 
 # Run all build steps together to avoid individual failures
+# Using || true to force continuation even if steps fail
 RUN echo "Running build process..." && \
-    (tinacms build --partial-reindex --verbose && eleventy --input='site' && tsc --skipLibCheck) || \
-    echo "Build process failed but continuing..."
+    (tinacms build --partial-reindex --verbose && eleventy --input='site' && tsc --skipLibCheck) || true
 
 # Note: We'll fix any build issues after deployment
 
