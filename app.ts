@@ -9,7 +9,8 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 
-import { databaseClient } from "./tina/__generated__/databaseClient";
+// Import the database client
+import database from "./tina/database";
 
 dotenv.config();
 
@@ -56,11 +57,11 @@ const handler = TinaNodeBackend({
     ? LocalBackendAuthProvider()
     : AuthJsBackendAuthProvider({
         authOptions: TinaAuthJSOptions({
-          databaseClient,
+          databaseClient: database,
           secret: process.env.NEXTAUTH_SECRET!,
         }),
       }),
-  databaseClient,
+  databaseClient: database,
 });
 
 const handleTina: RequestHandler = async (req, res) => {
@@ -74,7 +75,7 @@ const handleTina: RequestHandler = async (req, res) => {
 
 app.all("/api/tina/*", async (req, res, next) => {
   // Modify request if needed
-  handleTina(req, res, next);
+  await handleTina(req, res, next);
 });
 
 app.listen(port, () => {
