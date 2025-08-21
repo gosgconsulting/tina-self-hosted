@@ -109,6 +109,9 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 tinacms
 
 COPY --from=deps /app/node_modules ./node_modules
+# Create directories first to ensure they exist
+RUN mkdir -p _site dist
+# Copy build outputs from builder stage
 COPY --from=builder /app/_site ./_site
 COPY --from=builder /app/dist ./dist
 
