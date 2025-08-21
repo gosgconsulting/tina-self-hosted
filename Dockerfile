@@ -27,6 +27,10 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# Enable build phase mode to bypass MongoDB requirement during build
+ENV TINA_BUILD_PHASE=true
+ENV TINA_PUBLIC_IS_LOCAL=false
+
 # Uncomment the following line in case you want to disable telemetry during runtime.
 # ENV NO_TELEMETRY 1
 

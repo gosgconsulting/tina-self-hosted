@@ -5,6 +5,9 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+// Special handling for build phase to allow builds without MongoDB
+const isBuildPhase = process.env.TINA_BUILD_PHASE === "true";
+
 if (!process.env.TINA_PUBLIC_IS_LOCAL) {
   console.warn("TINA_PUBLIC_IS_LOCAL is not defined")
 }
@@ -15,9 +18,13 @@ const mongoUri =
   process.env.MONGODB_URL ||
   process.env.MONGO_URL;
 
-if (!mongoUri) {
+// Only throw error if not in build phase and MongoDB URI is missing
+if (!mongoUri && !isBuildPhase) {
   throw new Error("MongoDB connection string is required. Set MONGODB_URI (preferred) or MONGODB_URL/MONGO_URL.")
 }
+
+// For build phase without MongoDB, use a placeholder URI
+const effectiveMongoUri = isBuildPhase && !mongoUri ? "mongodb://placeholder:27017/build-placeholder" : mongoUri;
 
 const isLocal = process.env.TINA_PUBLIC_IS_LOCAL === "true";
 
@@ -39,7 +46,7 @@ export default isLocal
       databaseAdapter: new MongodbLevel<string, Record<string, unknown>>({
         collectionName: 'tinacms',
         dbName: "tinacms-self-host",
-        mongoUri,
+        mongoUri: effectiveMongoUri,
       }),
       namespace: branch,
     });
