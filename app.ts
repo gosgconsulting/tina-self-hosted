@@ -13,6 +13,12 @@ import { databaseClient } from "./tina/__generated__/databaseClient";
 
 dotenv.config();
 
+// Set NEXTAUTH_URL automatically if using Railway
+if (process.env.RAILWAY_PUBLIC_DOMAIN && !process.env.NEXTAUTH_URL) {
+  process.env.NEXTAUTH_URL = `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`;
+  console.log(`Setting NEXTAUTH_URL to ${process.env.NEXTAUTH_URL} from RAILWAY_PUBLIC_DOMAIN`);
+}
+
 if (!process.env.NEXTAUTH_SECRET) {
   throw new Error("NEXTAUTH_SECRET must be defined")
 }
