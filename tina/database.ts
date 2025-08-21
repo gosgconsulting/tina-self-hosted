@@ -9,8 +9,14 @@ if (!process.env.TINA_PUBLIC_IS_LOCAL) {
   console.warn("TINA_PUBLIC_IS_LOCAL is not defined")
 }
 
-if (!process.env.MONGODB_URI) {
-  throw new Error("MONGODB_URI must be defined")
+// Support multiple common env var names for Mongo on hosting providers (e.g. Railway)
+const mongoUri =
+  process.env.MONGODB_URI ||
+  process.env.MONGODB_URL ||
+  process.env.MONGO_URL;
+
+if (!mongoUri) {
+  throw new Error("MongoDB connection string is required. Set MONGODB_URI (preferred) or MONGODB_URL/MONGO_URL.")
 }
 
 const isLocal = process.env.TINA_PUBLIC_IS_LOCAL === "true";
@@ -33,7 +39,7 @@ export default isLocal
       databaseAdapter: new MongodbLevel<string, Record<string, unknown>>({
         collectionName: 'tinacms',
         dbName: "tinacms-self-host",
-        mongoUri: process.env.MONGODB_URI!,
+        mongoUri,
       }),
       namespace: branch,
     });
