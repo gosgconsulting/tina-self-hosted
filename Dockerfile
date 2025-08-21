@@ -31,6 +31,12 @@ COPY . .
 ENV TINA_BUILD_PHASE=true
 ENV TINA_PUBLIC_IS_LOCAL=false
 
+# Set Git repository information for build phase
+ENV GITHUB_BRANCH=${GITHUB_BRANCH:-main}
+ENV GITHUB_OWNER=gosgconsulting
+ENV GITHUB_REPO=tina-self-hosted
+ENV GITHUB_PERSONAL_ACCESS_TOKEN=dummy-token-for-build-only
+
 # Uncomment the following line in case you want to disable telemetry during runtime.
 # ENV NO_TELEMETRY 1
 

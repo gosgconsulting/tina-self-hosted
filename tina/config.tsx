@@ -5,6 +5,7 @@ import {
 } from "tinacms-authjs/dist/tinacms";
 
 const isLocal = process.env.TINA_PUBLIC_IS_LOCAL === "true";
+const isBuildPhase = process.env.TINA_BUILD_PHASE === "true";
 
 // @ts-ignore
 const config = defineConfig({
@@ -15,6 +16,13 @@ const config = defineConfig({
   build: {
     outputFolder: "admin",
     publicFolder: "_site",
+  },
+  // Explicitly define Git repository information to avoid local Git detection
+  // This is especially important in Docker/Railway environments
+  github: {
+    branch: process.env.GITHUB_BRANCH || "main",
+    owner: process.env.GITHUB_OWNER || "gosgconsulting",
+    repo: process.env.GITHUB_REPO || "tina-self-hosted",
   },
   media: {
     tina: {
