@@ -47,6 +47,9 @@ ENV GITHUB_OWNER=gosgconsulting
 ENV GITHUB_REPO=tina-self-hosted
 ENV GITHUB_PERSONAL_ACCESS_TOKEN=dummy-token-for-build-only
 
+# Explicitly set NODE_ENV for build phase
+ENV NODE_ENV=development
+
 # Uncomment the following line in case you want to disable telemetry during runtime.
 # ENV NO_TELEMETRY 1
 
@@ -58,13 +61,24 @@ RUN yarn build
 # Production image, copy all the files and run next
 FROM base AS runner
 
-ENV GITHUB_BRANCH=''
-ENV GITHUB_OWNER=''
-ENV GITHUB_REPO=''
-ENV GITHUB_PERSONAL_ACCESS_TOKEN=''
-ENV MONGODB_URI=''
-ENV NEXTAUTH_SECRET=''
-ENV NEXTAUTH_URL=''
+# These environment variables will be provided at runtime by Railway
+# Setting them as ARG allows them to be overridden at build time
+ARG GITHUB_BRANCH
+ARG GITHUB_OWNER
+ARG GITHUB_REPO
+ARG GITHUB_PERSONAL_ACCESS_TOKEN
+ARG MONGODB_URI
+ARG NEXTAUTH_SECRET
+ARG NEXTAUTH_URL
+
+# Set default values for environment variables
+ENV GITHUB_BRANCH=${GITHUB_BRANCH:-main}
+ENV GITHUB_OWNER=${GITHUB_OWNER:-gosgconsulting}
+ENV GITHUB_REPO=${GITHUB_REPO:-tina-self-hosted}
+ENV GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN:-''}
+ENV MONGODB_URI=${MONGODB_URI:-''}
+ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-''}
+ENV NEXTAUTH_URL=${NEXTAUTH_URL:-''}
 
 WORKDIR /app
 
