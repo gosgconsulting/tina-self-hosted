@@ -23,9 +23,19 @@ ARG MONGODB_URI
 ARG NEXTAUTH_SECRET
 ARG GITHUB_BRANCH
 
+# Install git for TinaCMS build process
+RUN apk add --no-cache git
+
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
+# Initialize a git repository for TinaCMS build
+RUN git init && \
+    git config --global user.email "docker@example.com" && \
+    git config --global user.name "Docker Build" && \
+    git add . && \
+    git commit -m "Initial commit for build"
 
 # Enable build phase mode to bypass MongoDB requirement during build
 ENV TINA_BUILD_PHASE=true
